@@ -1,34 +1,33 @@
 //import { colors } from '@/core/constants/Colors';
-import { Text, View, TouchableOpacity } from "react-native";
-import { fonts } from '@/core/constants/Fonts';
-import { StyleSheet } from 'react-native';
-import useTheme, { ColorScheme } from '@/core/hooks/useTheme';
-import { useQuery } from 'convex/react';
-import { api } from 'convex/_generated/api';
+import Header from "@/components/Header";
+import TodoInput from "@/components/TodoInput";
+import useTheme from "@/core/hooks/useTheme";
+import { createHomeStyles } from "@assets/styles/home.styles";
+import { api } from "convex/_generated/api";
+import { useQuery } from "convex/react";
+import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-    const { toggleDarkMode, colors } = useTheme();
-    const styles = createStyles(colors);
+  const { toggleDarkMode, colors } = useTheme();
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.content}>Edit app/index.tsx to edit this screen.</Text>
-            <TouchableOpacity onPress={toggleDarkMode}><Text style={styles.content}>Change Color Mode</Text></TouchableOpacity>
-        </View>
-    );
-}
+  const homeStyles = createHomeStyles(colors);
 
-const createStyles = (colors: ColorScheme) => {
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: colors.bg,
-        },
-        content: {
-            color: colors.text,
-        }
-    });
-    return styles;
+  const todo = useQuery(api.todo.getTodo);
+
+  return (
+    <LinearGradient
+      colors={colors.gradients.background}
+      style={homeStyles.container}
+    >
+      <StatusBar barStyle={colors.statusBarStyle} />
+      <SafeAreaView style={homeStyles.container}>
+        <Header />
+        <TodoInput />
+
+        {todo?.map((todo) => <Text key={todo._id}>{todo.text}</Text>)}
+      </SafeAreaView>
+    </LinearGradient>
+  );
 }
